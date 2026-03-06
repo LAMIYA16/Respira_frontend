@@ -3,6 +3,7 @@ import './App.css';
 import DocPat from './DocPat';
 import DocPage1 from './DocPage1';
 import PatPage1 from './PatPage1';
+import React from "react";
 
 
 function Landing() {
