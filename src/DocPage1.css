@@ -1,0 +1,324 @@
+/* ===================== */
+/* DOCTOR DASHBOARD */
+/* ===================== */
+.doctor-dashboard {
+  display: flex;
+  height: 100vh;
+  /* Inherits body radial gradient */
+  background: transparent;
+  color: var(--text-main);
+  font-family: "Poiret One", sans-serif;
+  overflow: hidden;
+  /* Prevent body scroll */
+}
+
+/* ===================== */
+/* SIDEBAR (LIST) */
+/* ===================== */
+.patient-list {
+  width: 320px;
+  /* Slightly wider for better spacing */
+  background: rgba(2, 6, 23, 0.7);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem 2rem;
+}
+
+.brand-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 1.8rem;
+  color: var(--primary-blue);
+  margin-bottom: 3rem;
+  letter-spacing: -0.05em;
+  text-align: center;
+  text-transform: lowercase;
+}
+
+.list-header {
+  font-size: 23px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 0.5rem;
+  text-align:center;
+}
+
+.patient-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem;
+  border-radius: 16px;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 0.8rem;
+}
+
+.patient-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateX(5px);
+}
+
+.patient-card.active {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.patient-info strong {
+  display: block;
+  font-size: 25px;
+  /* ~21px */
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.patient-info span {
+  font-size: 20px;
+  color: var(--text-muted);
+}
+
+/* ===================== */
+/* MAIN CONTENT */
+/* ===================== */
+.patient-details {
+  flex: 1;
+  padding: 3rem 4rem;
+  overflow-y: auto;
+  /* Allow scrolling for content */
+  height: 100vh;
+  position: relative;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.patient-title h2 {
+  font-family: "Poiret One", sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--text-main);
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+  font-size: 20px;
+  font-weight: 600;
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  letter-spacing: 0.05em;
+}
+
+/* ===================== */
+/* GLASS PANELS & GRID */
+/* ===================== */
+.dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  /* Max width to prevent it from getting too stretched on huge screens */
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.glass-panel {
+  background: rgba(15, 23, 42, 0.6);
+  /* Slightly darker for contrast */
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 2.5rem;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+  
+}
+
+.glass-panel:hover {
+  transform: translateY(-2px);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.glass-panel h3 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  color: var(--cyan-light);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 1rem;
+}
+
+/* History List */
+.history-list {
+  list-style: none;
+  margin-bottom: 2rem;
+  
+}
+
+.history-list li {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--text-muted);
+  font-size: 23px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-list li:last-child {
+  border-bottom: none;
+}
+
+.history-list li span {
+  color: var(--text-main);
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.2rem 0.8rem;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* Audio Visualizer */
+.visualizer-container {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 2rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  padding: 1rem;
+}
+
+.bar {
+  width: 10px;
+  background: var(--primary-blue);
+  border-radius: 20px;
+  animation: visualize 1.2s ease-in-out infinite alternate;
+  box-shadow: 0 0 15px var(--primary-blue);
+}
+
+@keyframes visualize {
+  0% {
+    height: 20%;
+    opacity: 0.3;
+  }
+
+  100% {
+    height: 90%;
+    opacity: 1;
+  }
+}
+
+/* Primary Action Button */
+.primary-btn {
+  width: 100%;
+  padding: 1.2rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--primary-blue), var(--blue-deep));
+  color: white;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Poiret One", sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 1rem;
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+}
+
+.primary-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-3px);
+  
+}
+
+
+
+/* Placeholder */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  opacity: 0.6;
+  font-size: 1.8rem;
+  font-family: "Poiret One", sans-serif;
+  color: var(--text-muted);
+}
+
+.empty-icon {
+  font-size: 5rem;
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.2));
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .doctor-dashboard {
+    flex-direction: column !important;
+    /* Stack vertically only on small screens */
+    overflow: auto;
+    /* Allow scroll on mobile */
+  }
+
+  .patient-list {
+    width: 100%;
+    min-width: 100%;
+    height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 1.5rem;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .patient-card {
+    min-width: 200px;
+    margin-bottom: 0;
+  }
+
+  .patient-details {
+    padding: 2rem;
+    height: auto;
+    /* Auto height on mobile */
+  }
+}
