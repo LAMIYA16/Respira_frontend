@@ -1,16 +1,12 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./DocPage1.css";
 import { supabase } from "./supabaseClient";
 
 function DocPage1() {
 
-  const [patients, setPatients] = useState([
-    { id: 1, name: "Ram Anok", age: 23, prescriptions: [] },
-    { id: 2, name: "Anand Raj", age: 32, prescriptions: [] },
-    { id: 3, name: "Rahul Verma", age: 60, prescriptions: [] }
-  ]);
-
+  const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [prescriptions, setPrescriptions] = useState([]);
 
   const [showPatientForm, setShowPatientForm] = useState(false);
   const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
@@ -34,6 +30,52 @@ function DocPage1() {
 
   const fileInputRef = useRef(null);
 
+  /* FETCH PATIENTS */
+
+  useEffect(() => {
+    fetchPatients();
+  }, []);
+
+  const fetchPatients = async () => {
+
+    const { data, error } = await supabase
+      .from("patient")
+      .select("*");
+
+    if (error) {
+      console.error("Error fetching patients:", error);
+      return;
+    }
+
+    const formattedPatients = data.map((p) => ({
+      id: p.patient_id,
+      name: p.name,
+      age: p.age
+    }));
+
+    setPatients(formattedPatients);
+  };
+
+  /* FETCH PRESCRIPTIONS */
+
+  const fetchPrescriptions = async (patientId) => {
+
+    const { data, error } = await supabase
+      .from("prescriptions")
+      .select("*")
+      .eq("patient_id", patientId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching prescriptions:", error);
+      return;
+    }
+
+    setPrescriptions(data);
+  };
+
+  /* FILE HANDLING */
+
   const handleUploadClick = () => {
     fileInputRef.current.click();
   };
@@ -45,7 +87,8 @@ function DocPage1() {
     }
   };
 
-  /* PATIENT INPUT CHANGE */
+  /* PATIENT FORM */
+
   const handlePatientChange = (e) => {
     setNewPatient({
       ...newPatient,
@@ -53,50 +96,40 @@ function DocPage1() {
     });
   };
 
-  /* ADD PATIENT */
-const savePatient = async () => {
+  const savePatient = async () => {
 
-  const { data, error } = await supabase
-    .from("patient")
-    .insert([
-      {
-        name: newPatient.name,
-        age: newPatient.age,
-        gender: newPatient.gender,
-        contact_number: newPatient.contact,
-        email: newPatient.email,
-        password: "default123"
-      }
-    ])
-    .select();
+    const { error } = await supabase
+      .from("patient")
+      .insert([
+        {
+          name: newPatient.name,
+          age: newPatient.age,
+          gender: newPatient.gender,
+          contact_number: newPatient.contact,
+          email: newPatient.email,
+          password: "default123"
+        }
+      ]);
 
-  if (error) {
-    console.error("Error adding patient:", error);
-    return;
-  }
+    if (error) {
+      console.error("Error adding patient:", error);
+      return;
+    }
 
-  const savedPatient = data[0];
+    setNewPatient({
+      name: "",
+      age: "",
+      gender: "",
+      contact: "",
+      email: ""
+    });
 
-  const patient = {
-    id: savedPatient.patient_id,
-    name: savedPatient.name,
-    age: savedPatient.age,
-    prescriptions: []
+    setShowPatientForm(false);
+    fetchPatients();
   };
 
-  setPatients([...patients, patient]);
+  /* PRESCRIPTION FORM */
 
-  setNewPatient({
-    name: "",
-    age: "",
-    gender: "",
-    contact: "",
-    email: ""
-  });
-
-  setShowPatientForm(false);
-};
-  /* PRESCRIPTION INPUT */
   const handlePrescriptionChange = (e) => {
     setPrescriptionData({
       ...prescriptionData,
@@ -104,52 +137,51 @@ const savePatient = async () => {
     });
   };
 
-  /* SAVE PRESCRIPTION */
- const savePrescription = async () => {
+  const savePrescription = async () => {
 
-  if (!selectedPatient) {
-    alert("Please select a patient first");
-    return;
-  }
+    if (!selectedPatient) {
+      alert("Select a patient first");
+      return;
+    }
 
-  const { data, error } = await supabase
-    .from("prescriptions")
-    .insert([
-      {
-        doctor_id: "9ca6a126-44a2-4a33-b2d5-c8c13ea0e98e",
-        patient_id: "14235d76-4d0b-445d-8bef-7c1d673914e4",
-        diagnosis: diagnosis,
-        medicine: prescriptionData.medicine,
-        dosage: prescriptionData.dosage,
-        duration: prescriptionData.duration,
-        notes: prescriptionData.notes
-      }
-    ])
-    .select();
+    const { error } = await supabase
+      .from("prescriptions")
+      .insert([
+        {
+          doctor_id: "9ca6a126-44a2-4a33-b2d5-c8c13ea0e98e",
+          patient_id: selectedPatient.id,
+          diagnosis: diagnosis,
+          medicine: prescriptionData.medicine,
+          dosage: prescriptionData.dosage,
+          duration: prescriptionData.duration,
+          notes: prescriptionData.notes
+        }
+      ]);
 
-  if (error) {
-    console.error("Error saving prescription:", error);
-    alert("Failed to save prescription");
-    return;
-  }
+    if (error) {
+      console.error("Error saving prescription:", error);
+      return;
+    }
 
-  console.log("Prescription saved:", data);
+    setPrescriptionData({
+      medicine: "",
+      dosage: "",
+      duration: "",
+      notes: ""
+    });
 
-  setPrescriptionData({
-    medicine: "",
-    dosage: "",
-    duration: "",
-    notes: ""
-  });
+    setDiagnosis("");
+    setShowPrescriptionForm(false);
 
-  setDiagnosis("");
+    fetchPrescriptions(selectedPatient.id);
+  };
 
-  setShowPrescriptionForm(false);
-};
   return (
+
     <div className="doctor-dashboard">
 
       {/* SIDEBAR */}
+
       <div className="patient-list">
 
         <h1 className="brand-title">respira.</h1>
@@ -163,11 +195,16 @@ const savePatient = async () => {
         </button>
 
         {patients.map((patient) => (
+
           <div
             key={patient.id}
             className={`patient-card ${selectedPatient?.id === patient.id ? "active" : ""}`}
-            onClick={() => setSelectedPatient(patient)}
+            onClick={() => {
+              setSelectedPatient(patient);
+              fetchPrescriptions(patient.id);
+            }}
           >
+
             <div className="patient-info">
               <strong>{patient.name}</strong>
               <span>Age {patient.age}</span>
@@ -176,16 +213,23 @@ const savePatient = async () => {
             {selectedPatient?.id === patient.id && (
               <span style={{ color: "var(--cyan-light)" }}>●</span>
             )}
+
           </div>
+
         ))}
+
       </div>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN SECTION */}
+
       <div className="patient-details">
 
         {selectedPatient ? (
+
           <>
+
             <div className="header-row">
+
               <div className="patient-title">
 
                 <h2>{selectedPatient.name}</h2>
@@ -199,12 +243,15 @@ const savePatient = async () => {
                 </button>
 
               </div>
+
             </div>
 
             <div className="dashboard-grid">
 
               {/* MEDICAL HISTORY */}
+
               <div className="glass-panel history-panel">
+
                 <h3>📜 Medical History</h3>
 
                 <ul className="history-list">
@@ -212,28 +259,34 @@ const savePatient = async () => {
                   <li>Bronchitis <span>June 2023</span></li>
                   <li>COPD <span>Jan 2026</span></li>
                 </ul>
+
               </div>
 
-              {/* AUDIO */}
+              {/* SOUND ANALYSIS */}
+
               <div className="glass-panel audio-panel">
 
                 <h3>🔊 Sound Analysis</h3>
 
                 <div className="visualizer-container">
+
                   {[...Array(8)].map((_, i) => (
+
                     <div
                       key={i}
                       className="bar"
                       style={{ animationDelay: `${i * 0.1}s` }}
                     ></div>
+
                   ))}
+
                 </div>
 
                 <button
                   className="primary-btn"
                   onClick={handleUploadClick}
                 >
-                  Drop Audio
+                  Upload Audio
                 </button>
 
                 <input
@@ -247,40 +300,73 @@ const savePatient = async () => {
               </div>
 
             </div>
+
+            {/* PRESCRIPTIONS PANEL */}
+
+            <div className="glass-panel prescription-panel">
+
+              <h3>🩺 Patient Medication Log</h3>
+
+              {prescriptions.length === 0 ? (
+                <p>No medications recorded yet</p>
+              ) : (
+
+                <ul className="history-list">
+
+                  {prescriptions.map((p) => (
+
+                    <li key={p.prescription_id}>
+
+                      <strong>{p.diagnosis}</strong><br />
+
+                      Medicine: {p.medicine}<br />
+                      Dosage: {p.dosage}<br />
+                      Duration: {p.duration}
+
+                      <span>
+                        {new Date(p.created_at).toLocaleDateString()}
+                      </span>
+
+                    </li>
+
+                  ))}
+
+                </ul>
+
+              )}
+
+            </div>
+
           </>
+
         ) : (
+
           <div className="empty-state">
             <div className="empty-icon">🩺</div>
             <p>Select a patient from the sidebar</p>
           </div>
+
         )}
+
       </div>
 
+      {/* ADD PATIENT MODAL */}
 
-      {/* ADD PATIENT POPUP */}
       {showPatientForm && (
+
         <div className="modal-overlay">
 
           <div className="modal-box">
 
             <h3>Add Patient</h3>
 
-            <input
-              name="name"
-              placeholder="Patient Name"
-              value={newPatient.name}
-              onChange={handlePatientChange}
-            />
+            <input name="name" placeholder="Patient Name"
+              value={newPatient.name} onChange={handlePatientChange} />
 
-            <input
-              name="age"
-              placeholder="Age"
-              value={newPatient.age}
-              onChange={handlePatientChange}
-            />
+            <input name="age" placeholder="Age"
+              value={newPatient.age} onChange={handlePatientChange} />
 
-            <select
-              name="gender"
+            <select name="gender"
               value={newPatient.gender}
               onChange={handlePatientChange}
             >
@@ -290,15 +376,13 @@ const savePatient = async () => {
               <option>Other</option>
             </select>
 
-            <input
-              name="contact"
+            <input name="contact"
               placeholder="Contact Number"
               value={newPatient.contact}
               onChange={handlePatientChange}
             />
 
-            <input
-              name="email"
+            <input name="email"
               placeholder="Email"
               value={newPatient.email}
               onChange={handlePatientChange}
@@ -307,19 +391,18 @@ const savePatient = async () => {
             <div className="modal-buttons">
 
               <button onClick={savePatient}>Save</button>
-
-              <button onClick={() => setShowPatientForm(false)}>
-                Cancel
-              </button>
+              <button onClick={() => setShowPatientForm(false)}>Cancel</button>
 
             </div>
 
           </div>
+
         </div>
+
       )}
 
+      {/* ADD PRESCRIPTION MODAL */}
 
-      {/* ADD PRESCRIPTION POPUP */}
       {showPrescriptionForm && (
 
         <div className="modal-overlay">
@@ -329,35 +412,30 @@ const savePatient = async () => {
             <h3>Add Prescription</h3>
 
             <input
-              type="text"
               placeholder="Diagnosis"
               value={diagnosis}
               onChange={(e) => setDiagnosis(e.target.value)}
             />
 
-            <input
-              name="medicine"
-              placeholder="Medicine Name"
+            <input name="medicine"
+              placeholder="Medicine"
               value={prescriptionData.medicine}
               onChange={handlePrescriptionChange}
             />
 
-            <input
-              name="dosage"
+            <input name="dosage"
               placeholder="Dosage"
               value={prescriptionData.dosage}
               onChange={handlePrescriptionChange}
             />
 
-            <input
-              name="duration"
+            <input name="duration"
               placeholder="Duration"
               value={prescriptionData.duration}
               onChange={handlePrescriptionChange}
             />
 
-            <textarea
-              name="notes"
+            <textarea name="notes"
               placeholder="Notes"
               value={prescriptionData.notes}
               onChange={handlePrescriptionChange}
@@ -374,7 +452,9 @@ const savePatient = async () => {
             </div>
 
           </div>
+
         </div>
+
       )}
 
     </div>
