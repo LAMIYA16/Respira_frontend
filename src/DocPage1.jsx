@@ -1,8 +1,14 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./DocPage1.css";
 import { supabase } from "./supabaseClient";
 
 function DocPage1() {
+
+  const navigate = useNavigate();
+
+  const doctorId = localStorage.getItem("doctor_id");
+  const doctorName = localStorage.getItem("doctor_name");
 
   const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -30,17 +36,27 @@ function DocPage1() {
 
   const fileInputRef = useRef(null);
 
-  /* FETCH PATIENTS */
+  /* CHECK LOGIN */
 
   useEffect(() => {
+
+    if (!doctorId) {
+      navigate("/doctor-login");
+      return;
+    }
+
     fetchPatients();
+
   }, []);
+
+  /* FETCH PATIENTS */
 
   const fetchPatients = async () => {
 
     const { data, error } = await supabase
       .from("patient")
-      .select("*");
+      .select("*")
+      .eq("doctor_id", doctorId);
 
     if (error) {
       console.error("Error fetching patients:", error);
@@ -74,26 +90,31 @@ function DocPage1() {
     setPrescriptions(data);
   };
 
-  /* FILE HANDLING */
+  /* FILE UPLOAD */
 
   const handleUploadClick = () => {
     fileInputRef.current.click();
   };
 
   const handleFileChange = (event) => {
+
     const file = event.target.files[0];
+
     if (file) {
       console.log("Selected file:", file.name);
     }
+
   };
 
   /* PATIENT FORM */
 
   const handlePatientChange = (e) => {
+
     setNewPatient({
       ...newPatient,
       [e.target.name]: e.target.value
     });
+
   };
 
   const savePatient = async () => {
@@ -107,7 +128,8 @@ function DocPage1() {
           gender: newPatient.gender,
           contact_number: newPatient.contact,
           email: newPatient.email,
-          password: "default123"
+          password: "default123",
+          doctor_id: doctorId
         }
       ]);
 
@@ -125,16 +147,20 @@ function DocPage1() {
     });
 
     setShowPatientForm(false);
+
     fetchPatients();
+
   };
 
   /* PRESCRIPTION FORM */
 
   const handlePrescriptionChange = (e) => {
+
     setPrescriptionData({
       ...prescriptionData,
       [e.target.name]: e.target.value
     });
+
   };
 
   const savePrescription = async () => {
@@ -148,7 +174,7 @@ function DocPage1() {
       .from("prescriptions")
       .insert([
         {
-          doctor_id: "9ca6a126-44a2-4a33-b2d5-c8c13ea0e98e",
+          doctor_id: doctorId,
           patient_id: selectedPatient.id,
           diagnosis: diagnosis,
           medicine: prescriptionData.medicine,
@@ -171,9 +197,11 @@ function DocPage1() {
     });
 
     setDiagnosis("");
+
     setShowPrescriptionForm(false);
 
     fetchPrescriptions(selectedPatient.id);
+
   };
 
   return (
@@ -185,6 +213,13 @@ function DocPage1() {
       <div className="patient-list">
 
         <h1 className="brand-title">respira.</h1>
+
+        <div className="welcome-container">
+        <h2 className="welcome-doctor">
+            Dr. {doctorName}
+        </h2>
+        </div>
+
         <p className="list-header">Active Patients</p>
 
         <button
@@ -206,8 +241,10 @@ function DocPage1() {
           >
 
             <div className="patient-info">
+
               <strong>{patient.name}</strong>
               <span>Age {patient.age}</span>
+
             </div>
 
             {selectedPatient?.id === patient.id && (
@@ -233,7 +270,10 @@ function DocPage1() {
               <div className="patient-title">
 
                 <h2>{selectedPatient.name}</h2>
-                <span className="status-badge">Stable</span>
+
+                <span className="status-badge">
+                  Stable
+                </span>
 
                 <button
                   className="prescription-btn"
@@ -248,21 +288,19 @@ function DocPage1() {
 
             <div className="dashboard-grid">
 
-              {/* MEDICAL HISTORY */}
-
               <div className="glass-panel history-panel">
 
                 <h3>📜 Medical History</h3>
 
                 <ul className="history-list">
+
                   <li>Asthma <span>Oct 2021</span></li>
                   <li>Bronchitis <span>June 2023</span></li>
                   <li>COPD <span>Jan 2026</span></li>
+
                 </ul>
 
               </div>
-
-              {/* SOUND ANALYSIS */}
 
               <div className="glass-panel audio-panel">
 
@@ -301,14 +339,16 @@ function DocPage1() {
 
             </div>
 
-            {/* PRESCRIPTIONS PANEL */}
+            {/* PRESCRIPTIONS */}
 
             <div className="glass-panel prescription-panel">
 
               <h3>🩺 Patient Medication Log</h3>
 
               {prescriptions.length === 0 ? (
+
                 <p>No medications recorded yet</p>
+
               ) : (
 
                 <ul className="history-list">
@@ -317,10 +357,10 @@ function DocPage1() {
 
                     <li key={p.prescription_id}>
 
-                      <strong>{p.diagnosis}</strong><br />
+                      <strong>{p.diagnosis}</strong><br/>
 
-                      Medicine: {p.medicine}<br />
-                      Dosage: {p.dosage}<br />
+                      Medicine: {p.medicine}<br/>
+                      Dosage: {p.dosage}<br/>
                       Duration: {p.duration}
 
                       <span>
@@ -342,8 +382,10 @@ function DocPage1() {
         ) : (
 
           <div className="empty-state">
+
             <div className="empty-icon">🩺</div>
             <p>Select a patient from the sidebar</p>
+
           </div>
 
         )}
@@ -360,13 +402,22 @@ function DocPage1() {
 
             <h3>Add Patient</h3>
 
-            <input name="name" placeholder="Patient Name"
-              value={newPatient.name} onChange={handlePatientChange} />
+            <input
+              name="name"
+              placeholder="Patient Name"
+              value={newPatient.name}
+              onChange={handlePatientChange}
+            />
 
-            <input name="age" placeholder="Age"
-              value={newPatient.age} onChange={handlePatientChange} />
+            <input
+              name="age"
+              placeholder="Age"
+              value={newPatient.age}
+              onChange={handlePatientChange}
+            />
 
-            <select name="gender"
+            <select
+              name="gender"
               value={newPatient.gender}
               onChange={handlePatientChange}
             >
@@ -376,13 +427,15 @@ function DocPage1() {
               <option>Other</option>
             </select>
 
-            <input name="contact"
+            <input
+              name="contact"
               placeholder="Contact Number"
               value={newPatient.contact}
               onChange={handlePatientChange}
             />
 
-            <input name="email"
+            <input
+              name="email"
               placeholder="Email"
               value={newPatient.email}
               onChange={handlePatientChange}
@@ -390,8 +443,13 @@ function DocPage1() {
 
             <div className="modal-buttons">
 
-              <button onClick={savePatient}>Save</button>
-              <button onClick={() => setShowPatientForm(false)}>Cancel</button>
+              <button onClick={savePatient}>
+                Save
+              </button>
+
+              <button onClick={() => setShowPatientForm(false)}>
+                Cancel
+              </button>
 
             </div>
 
@@ -417,25 +475,29 @@ function DocPage1() {
               onChange={(e) => setDiagnosis(e.target.value)}
             />
 
-            <input name="medicine"
+            <input
+              name="medicine"
               placeholder="Medicine"
               value={prescriptionData.medicine}
               onChange={handlePrescriptionChange}
             />
 
-            <input name="dosage"
+            <input
+              name="dosage"
               placeholder="Dosage"
               value={prescriptionData.dosage}
               onChange={handlePrescriptionChange}
             />
 
-            <input name="duration"
+            <input
+              name="duration"
               placeholder="Duration"
               value={prescriptionData.duration}
               onChange={handlePrescriptionChange}
             />
 
-            <textarea name="notes"
+            <textarea
+              name="notes"
               placeholder="Notes"
               value={prescriptionData.notes}
               onChange={handlePrescriptionChange}
@@ -443,7 +505,9 @@ function DocPage1() {
 
             <div className="modal-buttons">
 
-              <button onClick={savePrescription}>Save</button>
+              <button onClick={savePrescription}>
+                Save
+              </button>
 
               <button onClick={() => setShowPrescriptionForm(false)}>
                 Cancel
@@ -458,7 +522,9 @@ function DocPage1() {
       )}
 
     </div>
+
   );
+
 }
 
 export default DocPage1;

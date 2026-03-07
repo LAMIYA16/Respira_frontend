@@ -414,7 +414,17 @@
     transform: translateY(-10px);
   }
 }
+.welcome-container {
+    display: flex;
+    justify-content: center;
+}
 
+.welcome-doctor {
+  margin: 40px;
+  color: white;
+  font-weight: bold;
+  font-size: 30px;
+}
 /* Responsive */
 @media (max-width: 900px) {
   .doctor-dashboard {
@@ -483,4 +493,11 @@
     height: auto;
     /* Auto height on mobile */
   }
+
+  .welcome-container {
+    display: flex;
+    justify-content: center;
+}
+
+
 }

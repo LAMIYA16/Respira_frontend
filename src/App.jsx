@@ -3,7 +3,10 @@ import './App.css';
 import DocPat from './DocPat';
 import DocPage1 from './DocPage1';
 import PatPage1 from './PatPage1';
+import DoctorLogin from "./DoctorLogin";
+import DoctorSignup from "./DoctorSignup";
 import React from "react";
+
 
 
 function Landing() {
@@ -45,6 +48,8 @@ function App() {
         <Route path="/docpat" element={<DocPat />} />
         <Route path="/doctor" element={<DocPage1 />} />
         <Route path="/patient" element={<PatPage1 />} />
+        <Route path="/doctor-login" element={<DoctorLogin />} />
+        <Route path="/doctor-signup" element={<DoctorSignup />} /> 
        
       </Routes>
     </Router>

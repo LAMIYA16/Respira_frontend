@@ -25,7 +25,7 @@ function DocPat() {
       <div className="card-container">
 
         {/* DOCTOR CARD */}
-        <div className="role-card" onClick={() => navigate('/doctor')}>
+        <div className="role-card" onClick={() => navigate('/doctor-login')}>
           <div className="card-icon">🩺</div>
           <h2>Doctor</h2>
           <p>Monitor patients and analyze data</p>
