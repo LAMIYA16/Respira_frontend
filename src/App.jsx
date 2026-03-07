@@ -5,6 +5,8 @@ import DocPage1 from './DocPage1';
 import PatPage1 from './PatPage1';
 import DoctorLogin from "./DoctorLogin";
 import DoctorSignup from "./DoctorSignup";
+import PatientLogin from "./PatientLogin";
+import PatientSignup from "./PatientSignup";
 import React from "react";
 
 
@@ -49,7 +51,11 @@ function App() {
         <Route path="/doctor" element={<DocPage1 />} />
         <Route path="/patient" element={<PatPage1 />} />
         <Route path="/doctor-login" element={<DoctorLogin />} />
-        <Route path="/doctor-signup" element={<DoctorSignup />} /> 
+        <Route path="/doctor-signup" element={<DoctorSignup />} />
+        <Route path="/patient-login" element={<PatientLogin />} />
+        <Route path="/patient-signup" element={<PatientSignup />} />
+        <Route path="/patient-dashboard" element={<PatPage1 />} />
+ 
        
       </Routes>
     </Router>

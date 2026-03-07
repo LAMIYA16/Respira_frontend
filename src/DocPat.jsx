@@ -33,7 +33,7 @@ function DocPat() {
         </div>
 
         {/* PATIENT CARD */}
-        <div className="role-card" onClick={() => navigate('/patient')}>
+        <div className="role-card" onClick={() => navigate('/patient-login')}>
           <div className="card-icon">👤</div>
           <h2>Patient</h2>
           <p>Track your health and breathing</p>

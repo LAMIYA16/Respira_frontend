@@ -1,99 +1,88 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "./supabaseClient";
 import "./PatPage1.css";
 
-function PatPage1() {
-  const patient = {
-    name: "Ram Anok",
-    age: 23,
-  };
+function PatPage1(){
 
-  // previous detections
-  const history = [
-    {
-      id: 1,
-      disease: "Mild Asthma",
-      date: "Jan 2026",
-      notes: "Breathing irregularities detected from cough pattern.",
-      remedies: [
-        "Use prescribed inhaler twice daily.",
-        "Avoid dust and cold air.",
-        "Steam inhalation at night.",
-      ],
-    },
-    {
-      id: 2,
-      disease: "Bronchitis",
-      date: "Oct 2024",
-      notes: "Infection reduced after medication.",
-      remedies: [
-        "Take antibiotics",
-        "Drink warm fluids",
-      ],
-    },
-  ];
+ const [patient,setPatient] = useState(null);
+ const [diseases,setDiseases] = useState([]);
+ const [selected,setSelected] = useState(null);
 
-  const [selected, setSelected] = useState(history[0]);
+ useEffect(()=>{
 
-  const downloadReport = () => {
-    alert(`Downloading report for ${selected.disease}`);
-  };
+  const stored = JSON.parse(localStorage.getItem("patient"));
 
-  return (
-    <div className="patient-dashboard">
+  setPatient(stored);
 
-      {/* SIDEBAR */}
-      <div className="history-sidebar">
-        <h1 className="brand-title">respira.</h1>
-        <p className="sidebar-title">Your Records</p>
+  fetchDiseases(stored.patient_id);
 
-        {history.map((item) => (
-          <div
-            key={item.id}
-            className={`history-item ${selected.id === item.id ? "active" : ""}`}
-            onClick={() => setSelected(item)}
-          >
-            <strong>{item.disease}</strong>
-            <span>{item.date}</span>
-          </div>
-        ))}
-      </div>
+ },[]);
 
-      {/* MAIN */}
-      <div className="history-details">
-        <div className="details-content">
-          {/* Patient info */}
-          <div className="patient-summary glass-panel">
-            <h2>{patient.name}</h2>
-            <span>Age {patient.age}</span>
-          </div>
 
-          {/* Diagnosis */}
-          <div className="glass-panel">
-            <h3>🩺 Diagnosis</h3>
-            <p className="diagnosis">{selected.disease}</p>
-            <p className="doctor-notes">{selected.notes}</p>
-          </div>
+ const fetchDiseases = async (patientId)=>{
 
-          {/* Remedies */}
-          <div className="glass-panel">
-            <h3>💊 Suggested Remedies</h3>
-            <ul className="remedy-list">
-              {selected.remedies.map((r, i) => (
-                <li key={i}>{r}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
+  const { data } = await supabase
+   .from("disease_history")
+   .select("*")
+   .eq("patient_id", patientId);
 
-        {/* Download Fixed at Bottom of Panel */}
-        <div className="download-section">
-          <button className="primary-btn download-btn" onClick={downloadReport}>
-            Download Report 📄
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+  setDiseases(data);
+
+ };
+
+
+ return(
+
+  <div className="dashboard">
+
+   <div className="sidebar">
+
+    <h3>Your Records</h3>
+
+    {diseases.map((d)=>(
+     <div
+      key={d.id}
+      className="disease-card"
+      onClick={()=>setSelected(d)}
+     >
+      {d.disease}
+     </div>
+    ))}
+
+   </div>
+
+
+   <div className="content">
+
+    <h2>{patient?.name}</h2>
+
+    {selected && (
+
+     <div>
+
+      <h3>Diagnosis</h3>
+      <p>{selected.disease}</p>
+
+      <h4>Notes</h4>
+      <p>{selected.notes}</p>
+
+      <h4>Remedies</h4>
+
+      <ul>
+       {selected.remedies?.map((r,i)=>(
+        <li key={i}>{r}</li>
+       ))}
+      </ul>
+
+     </div>
+
+    )}
+
+   </div>
+
+  </div>
+
+ );
 }
 
 export default PatPage1;
