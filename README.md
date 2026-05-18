@@ -1,16 +1,164 @@
-# React + Vite
+# Respira Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AI-powered respiratory disease detection interface built using React.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Overview
 
-## React Compiler
+Respira is an AI-driven respiratory disorder detection system that analyzes lung sound recordings using a CRNN (Convolutional Recurrent Neural Network) model. The frontend provides an intuitive interface for doctors and patients to upload lung sound recordings, view prediction results, manage patient records, and monitor respiratory health.
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+The system supports diseases such as:
 
-## Expanding the ESLint configuration
+- Asthma
+- COPD
+- Pneumonia
+- Healthy respiratory conditions
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The frontend communicates with a Flask backend that performs preprocessing, Mel Spectrogram generation, and CRNN-based classification.
+
+---
+
+## Features
+
+- Doctor and Patient authentication
+- Interactive dashboards
+- Lung sound upload interface
+- AI-powered disease prediction display
+- Confidence score visualization
+- Patient management system
+- Prescription and medication logs
+- Responsive UI
+- Real-time prediction workflow
+
+---
+
+## Tech Stack
+
+### Frontend
+- React
+- JavaScript 
+- Axios
+
+### Backend
+- Flask
+- PyTorch
+- Librosa
+
+### AI Model
+- CRNN (CNN + LSTM)
+
+### Hardware Integration
+- Arduino UNO
+- MAX4466 Microphone Amplifier
+
+---
+
+## Project Architecture
+
+```text
+Frontend (React)
+        ↓
+Flask API
+        ↓
+Audio Preprocessing
+        ↓
+Mel Spectrogram Generation
+        ↓
+CRNN Model Prediction
+        ↓
+Prediction Results + Confidence Scores
+```
+
+---
+
+## Installation
+
+### Clone Repository
+
+```bash
+git clone <your-repository-link>
+cd respira-frontend
+```
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Run Development Server
+
+```bash
+npm run dev
+```
+
+or
+
+```bash
+npm start
+```
+
+---
+
+## Environment Variables
+
+Create a `.env` file:
+
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+---
+
+## Folder Structure
+
+```text
+src/
+│
+├── components/
+├── pages/
+├── services/
+├── assets/
+├── routes/
+├── hooks/
+├── context/
+└── utils/
+```
+
+---
+
+## System Workflow
+
+1. User uploads lung sound recording
+2. Audio sent to Flask backend
+3. Backend preprocesses audio using Librosa
+4. Mel Spectrogram generated
+5. CRNN model predicts disease
+6. Prediction returned to frontend
+7. Results displayed with confidence score
+
+---
+
+## Datasets Used
+
+- ICBHI Respiratory Sound Database
+- Kaggle Respiratory Sound Dataset
+
+---
+
+## Screens Included
+
+- Landing Page
+- Doctor Dashboard
+- Patient Dashboard
+- Upload Interface
+- Disease Prediction Result Page
+- Medication Logs
+---
+
+
+
+## License
+
+This project is developed for academic and research purposes.
