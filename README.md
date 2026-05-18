@@ -147,7 +147,7 @@ src/
 
 ---
 
-## Screens Included
+## Software Interfaces
 
 - Landing Page
 - Doctor Dashboard
@@ -158,7 +158,3 @@ src/
 ---
 
 
-
-## License
-
-This project is developed for academic and research purposes.
